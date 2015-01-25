@@ -1,3 +1,5 @@
+require './MovieTest.rb'
+
 class MovieData
   def initialize(dir, user = nil)
 
@@ -166,7 +168,6 @@ class MovieData
       result[i] = {user: uid, movie: mid, rating: rating, prediction: prediction}
       puts i
     end
-    return result
-    # return MovieTest.new(result)
+    return MovieTest.new(result)
   end
 end
