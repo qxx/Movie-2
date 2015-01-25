@@ -8,15 +8,7 @@ class MovieData
   # If "user" is not given, will read "u.data" as the training set,
   # and will have an empty test set.
   def initialize(dir, user = nil)
-
-    if user.nil?
-      training_filename = dir + '/u.data'
-    else
-      training_filename = dir + '/' + user.to_s + '.base'
-      test_filename = dir + '/' + user.to_s + '.test'
-    end
-    training_file = open(training_filename)
-    test_file = open(test_filename) unless test_filename.nil?
+    training_file, test_file = get_file(dir, user)
 
     @training_data = load_data(training_file)
     @test_data = load_data(test_file)
@@ -94,7 +86,7 @@ class MovieData
       uid = @test_data[i][:user_id]
       mid = @test_data[i][:movie_id]
       rating = @test_data[i][:rating]
-      prediction = predict(@test_data[i][:user_id], @test_data[i][:movie_id])
+      prediction = predict(uid, mid)
       result[i] = {user: uid, movie: mid, rating: rating, prediction: prediction}
     end
 
@@ -103,6 +95,19 @@ class MovieData
 
   private
   ## Part 1 load data
+
+  # Put together the filenames and open the files
+  def get_file(dir, user)
+    if user.nil?
+      training_filename = dir + '/u.data'
+    else
+      training_filename = dir + '/' + user.to_s + '.base'
+      test_filename = dir + '/' + user.to_s + '.test'
+    end
+    training_file = open(training_filename)
+    test_file = open(test_filename) unless test_filename.nil?
+    return training_file, test_file
+  end
 
   # Read the data file line by line, store each line in a hash,
   # finally return an array of hashes. 
