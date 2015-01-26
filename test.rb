@@ -2,7 +2,7 @@ require './MovieData.rb'
 
 z = MovieData.new("ml-100k", :u1)
 
-t = z.run_test(20)
+t = z.run_test(10000)
 
 puts "Mean = #{t.mean}"
 puts "Std = #{t.stddev}"
