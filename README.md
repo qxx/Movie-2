@@ -4,6 +4,10 @@ CodeClimate report
 ------------------
 [https://codeclimate.com/repos/54c5526869568051e5002730/](https://codeclimate.com/repos/54c5526869568051e5002730/)
 
+GitHub Repo
+------------------
+[https://github.com/qxx/Movie-2](https://github.com/qxx/Movie-2)
+
 Algorithm
 ------------------
 ### Similarity 
