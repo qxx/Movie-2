@@ -16,19 +16,19 @@ class MovieTest
   #
   # return [Float]
   def stddev
-    sum = @data.inject(0) do |memo, hash|
+    sum = @data.inject(0) do |accu, hash|
       err = hash[:prediction] - hash[:rating]
-      memo + (err - @mean) ** 2
+      accu + (err - @mean) ** 2
     end
     return Math.sqrt(sum.to_f / (@data.size - 1))
   end
 
-  # Return the root ean square error of the prediction
+  # Return the root mean square error of the prediction
   #
   # return [Float]
   def rms
-    sum = @data.inject(0) do |memo, hash|
-      memo + (hash[:prediction] - hash[:rating]) ** 2
+    sum = @data.inject(0) do |accu, hash|
+      accu + (hash[:prediction] - hash[:rating]) ** 2
     end
     return Math.sqrt(sum.to_f / @data.size)
   end
@@ -37,11 +37,7 @@ class MovieTest
   #
   # return [Array]
   def to_a
-    array = []
-    @data.each do |hash|
-      array.push([hash[:user], hash[:movie], hash[:rating], hash[:prediction]])
-    end
-    return array
+    @data.inject([]) { |array, h| array.push(h.values)}
   end
 
   private
@@ -50,8 +46,8 @@ class MovieTest
   #
   # return [Float]
   def cal_mean
-    sum = @data.inject(0) do |memo, hash|
-      memo + hash[:prediction] - hash[:rating]
+    sum = @data.inject(0) do |accu, hash|
+      accu + hash[:prediction] - hash[:rating]
     end
     sum.to_f / @data.size
   end

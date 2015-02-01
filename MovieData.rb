@@ -14,6 +14,7 @@ class MovieData
     @test_data = load_data(test_file)
     @training_ratings_u = prioritize(@training_data, 'user')
     @training_ratings_m = prioritize(@training_data, 'movie')
+    @similar_list = Hash.new
   end
 
   # Change the distance parameter in the similarity algrithm with this accessor.
@@ -38,7 +39,7 @@ class MovieData
   #
   # @return [Float] Rating estimate 
   def predict(u, m)
-    users = most_similar(@training_ratings_u, u).keys
+    users = get_similar_users(@training_ratings_u, u)
     ratings = []
     users.each {|uid| ratings.push(@training_ratings_u[uid][m])}
     ratings.compact!
@@ -99,10 +100,10 @@ class MovieData
   # Put together the filenames and open the files
   def get_file(dir, user)
     if user.nil?
-      training_filename = dir + '/u.data'
+      training_filename = './'+dir + '/u.data'
     else
-      training_filename = dir + '/' + user.to_s + '.base'
-      test_filename = dir + '/' + user.to_s + '.test'
+      training_filename = './'+dir + '/' + user.to_s + '.base'
+      test_filename = './'+dir + '/' + user.to_s + '.test'
     end
     training_file = open(training_filename)
     test_file = open(test_filename) unless test_filename.nil?
@@ -213,18 +214,32 @@ class MovieData
     return sum == 0 ? 0 : -sum.to_f / n
   end
 
-  # Return a list of users that are most similiar to the user given
+  ## Part 3 get most similar list and do prediction
+  
+  # Check the cached list, and call most_similar to generate the list if necessary
   #
   # @param [Hash] Hash containing ratings
   # @param [Integer] User id
   #
-  # @return [Hash] Most similar users with their similarity
+  # @return [Array] The list of most similar users
+  def get_similar_users(scores, u)
+    @similar_list[u] = most_similar(scores, u) if @similar_list[u].nil?
+    return @similar_list[u]
+  end
+
+  # Return a list of users that are most similiar to the user given
+  #
+  # @param [Hash] Hash containing cached most-similar-user lists
+  # @param [Hash] Hash containing ratings
+  # @param [Integer] User id
+  #
+  # @return [Array] Most similar users
   def most_similar(scores, u)
     first_pair = (u == 1 ? 2 : 1)
     max_similarity = similarity(scores, u, first_pair)
     user_list = {first_pair => max_similarity}
 
-    (1..scores.length).each do |uid|
+    scores.each do |uid, rating|
       next if uid == u && uid == first_pair
       this_similarity = similarity(scores, u, uid)
       next if this_similarity < max_similarity || this_similarity == 1
@@ -237,9 +252,10 @@ class MovieData
       
       user_list[uid] = this_similarity
     end
-
-    return user_list
+    
+    return user_list.keys
   end
+
 
   # Return the average rating of all ratings of movie m
   # 

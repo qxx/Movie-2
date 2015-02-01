@@ -44,17 +44,15 @@ The Stderr and RMS are a little larger than 1.0, which means the prediction is l
 
 Benchmarking
 ------------------
-The exact running time depends much on the hardware. I use the "time" shell command to capture the running time on my 6-year-old linux computer. It shows that:
-* 9s for first 100 tests
-* 1m25s for first 1000 tests
-* 11m36s for first 10000 tests
-
-Taking account the loading data part, it should be roughly 1 minute or so to run every 1000 tests.
+The exact running time depends much on the hardware. I use the "time" shell command to capture the running time on my 6-year-old linux computer. After caching the "most similar user list", the performance has been improved.
+* ~~Was 9s~~ Now 1.2s for first 100 tests
+* ~~Was 1m25s~~ Now 2.1s for first 1000 tests
+* ~~Was 11m36s~~ Now 14.6s for first 10000 tests
 
 Let m be the size of training set, and n be the size of the test set, the time complexity should be the sum of:
 * O(m+n) to load the file
 * O(2m) to orangize the data
-* O(m)*O(n) to find the most similar list for all test users
+* ~~O(m)*O(n)~~ O(m) to find the most similar list for all test users
 * O(l)*O(n) to calculate the average rating, where l is length of the most similar list, which should be ~O(1)
 
-So the overall time should be O(m)*O(n)
+So the overall time should be around O(m+n)

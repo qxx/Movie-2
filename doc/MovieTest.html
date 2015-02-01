@@ -204,7 +204,7 @@
 
         <div class="method-description">
           
-          <p>Return the root ean square error of the prediction</p>
+          <p>Return the root mean square error of the prediction</p>
 
 <p>return [Float]</p>
           
@@ -214,8 +214,8 @@
           <div class="method-source-code" id="rms-source">
             <pre><span class="ruby-comment"># File MovieTest.rb, line 29</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">rms</span>
-  <span class="ruby-identifier">sum</span> = <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">memo</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">memo</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">hash</span>[<span class="ruby-value">:prediction</span>] <span class="ruby-operator">-</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:rating</span>]) <span class="ruby-operator">**</span> <span class="ruby-value">2</span>
+  <span class="ruby-identifier">sum</span> = <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">accu</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">accu</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">hash</span>[<span class="ruby-value">:prediction</span>] <span class="ruby-operator">-</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:rating</span>]) <span class="ruby-operator">**</span> <span class="ruby-value">2</span>
   <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">return</span> <span class="ruby-constant">Math</span>.<span class="ruby-identifier">sqrt</span>(<span class="ruby-identifier">sum</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">/</span> <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">size</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -252,9 +252,9 @@
           <div class="method-source-code" id="stddev-source">
             <pre><span class="ruby-comment"># File MovieTest.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">stddev</span>
-  <span class="ruby-identifier">sum</span> = <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">memo</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">sum</span> = <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">accu</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">err</span> = <span class="ruby-identifier">hash</span>[<span class="ruby-value">:prediction</span>] <span class="ruby-operator">-</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:rating</span>]
-    <span class="ruby-identifier">memo</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">err</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@mean</span>) <span class="ruby-operator">**</span> <span class="ruby-value">2</span>
+    <span class="ruby-identifier">accu</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">err</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@mean</span>) <span class="ruby-operator">**</span> <span class="ruby-value">2</span>
   <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">return</span> <span class="ruby-constant">Math</span>.<span class="ruby-identifier">sqrt</span>(<span class="ruby-identifier">sum</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">/</span> (<span class="ruby-ivar">@data</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -291,11 +291,7 @@
           <div class="method-source-code" id="to_a-source">
             <pre><span class="ruby-comment"># File MovieTest.rb, line 39</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_a</span>
-  <span class="ruby-identifier">array</span> = []
-  <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">array</span>.<span class="ruby-identifier">push</span>([<span class="ruby-identifier">hash</span>[<span class="ruby-value">:user</span>], <span class="ruby-identifier">hash</span>[<span class="ruby-value">:movie</span>], <span class="ruby-identifier">hash</span>[<span class="ruby-value">:rating</span>], <span class="ruby-identifier">hash</span>[<span class="ruby-value">:prediction</span>]])
-  <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">array</span>
+  <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">inject</span>([]) { <span class="ruby-operator">|</span><span class="ruby-identifier">array</span>, <span class="ruby-identifier">h</span><span class="ruby-operator">|</span> <span class="ruby-identifier">array</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">h</span>.<span class="ruby-identifier">values</span>)}
 <span class="ruby-keyword">end</span></pre>
           </div>
           
