@@ -168,7 +168,10 @@ will read “u.data” as the training set, and will have an empty test set.</p>
   <span class="ruby-ivar">@test_data</span> = <span class="ruby-identifier">load_data</span>(<span class="ruby-identifier">test_file</span>)
   <span class="ruby-ivar">@training_ratings_u</span> = <span class="ruby-identifier">prioritize</span>(<span class="ruby-ivar">@training_data</span>, <span class="ruby-string">&#39;user&#39;</span>)
   <span class="ruby-ivar">@training_ratings_m</span> = <span class="ruby-identifier">prioritize</span>(<span class="ruby-ivar">@training_data</span>, <span class="ruby-string">&#39;movie&#39;</span>)
-  <span class="ruby-ivar">@similar_list</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-comment"># cache the similarity and similar user list</span>
+  <span class="ruby-ivar">@similarity_cache</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-ivar">@similar_list_cache</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-ivar">@average_rating_cache</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -211,7 +214,7 @@ will read “u.data” as the training set, and will have an empty test set.</p>
 
           
           <div class="method-source-code" id="movies-source">
-            <pre><span class="ruby-comment"># File MovieData.rb, line 60</span>
+            <pre><span class="ruby-comment"># File MovieData.rb, line 63</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">movies</span>(<span class="ruby-identifier">u</span>)
   <span class="ruby-ivar">@training_ratings_u</span>[<span class="ruby-identifier">u</span>].<span class="ruby-identifier">keys</span>
 <span class="ruby-keyword">end</span></pre>
@@ -248,7 +251,7 @@ will read “u.data” as the training set, and will have an empty test set.</p>
 
           
           <div class="method-source-code" id="predict-source">
-            <pre><span class="ruby-comment"># File MovieData.rb, line 41</span>
+            <pre><span class="ruby-comment"># File MovieData.rb, line 44</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">predict</span>(<span class="ruby-identifier">u</span>, <span class="ruby-identifier">m</span>)
   <span class="ruby-identifier">users</span> = <span class="ruby-identifier">get_similar_users</span>(<span class="ruby-ivar">@training_ratings_u</span>, <span class="ruby-identifier">u</span>)
   <span class="ruby-identifier">ratings</span> = []
@@ -296,7 +299,7 @@ user u did not rate movie m</p>
 
           
           <div class="method-source-code" id="rating-source">
-            <pre><span class="ruby-comment"># File MovieData.rb, line 30</span>
+            <pre><span class="ruby-comment"># File MovieData.rb, line 33</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">rating</span>(<span class="ruby-identifier">u</span>, <span class="ruby-identifier">m</span>)
   <span class="ruby-identifier">rating</span> = <span class="ruby-ivar">@training_ratings_u</span>[<span class="ruby-identifier">u</span>][<span class="ruby-identifier">m</span>]
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">rating</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-value">0</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">rating</span>
@@ -337,7 +340,7 @@ href="MovieTest.html">MovieTest</a> Object, data will be stored as e.g.
 
           
           <div class="method-source-code" id="run_test-source">
-            <pre><span class="ruby-comment"># File MovieData.rb, line 81</span>
+            <pre><span class="ruby-comment"># File MovieData.rb, line 84</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">run_test</span>(<span class="ruby-identifier">k</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">exit</span>(<span class="ruby-value">1</span>) <span class="ruby-keyword">if</span> <span class="ruby-ivar">@test_data</span>.<span class="ruby-identifier">nil?</span>
   <span class="ruby-identifier">k</span> = <span class="ruby-ivar">@test_data</span>.<span class="ruby-identifier">size</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">k</span>.<span class="ruby-identifier">nil?</span>
@@ -386,7 +389,7 @@ href="MovieTest.html">MovieTest</a> Object, data will be stored as e.g.
 
           
           <div class="method-source-code" id="viewers-source">
-            <pre><span class="ruby-comment"># File MovieData.rb, line 69</span>
+            <pre><span class="ruby-comment"># File MovieData.rb, line 72</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">viewers</span>(<span class="ruby-identifier">m</span>)
   <span class="ruby-ivar">@training_ratings_m</span>[<span class="ruby-identifier">m</span>].<span class="ruby-identifier">keys</span>
 <span class="ruby-keyword">end</span></pre>
