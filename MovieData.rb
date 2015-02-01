@@ -14,7 +14,10 @@ class MovieData
     @test_data = load_data(test_file)
     @training_ratings_u = prioritize(@training_data, 'user')
     @training_ratings_m = prioritize(@training_data, 'movie')
-    @similar_list = Hash.new
+    # cache the similarity and similar user list
+    @similarity_cache = Hash.new
+    @similar_list_cache = Hash.new
+    @average_rating_cache = Hash.new
   end
 
   # Change the distance parameter in the similarity algrithm with this accessor.
@@ -166,11 +169,8 @@ class MovieData
   # @param [Integer]
   # @param [Integer]
   def set_priority(scores, key1, key2, rating)
-    if scores[key1].nil?
-      scores[key1] = {key2 => rating}
-    else
-      scores[key1][key2] = rating
-    end
+    scores[key1] = Hash.new unless scores.has_key?(key1)
+    scores[key1][key2] = rating
   end
 
   ## Part 2 calculate similarity
@@ -193,6 +193,20 @@ class MovieData
     Hash[*(scores[entity1].keys & scores[entity2].keys).flat_map{|k| [k, 1]}]
   end
 
+  # Read the similarity of two users from cache, calculate if not found
+  #
+  # @param [Hash] Hash containing ratings
+  # @param [Integer] User id
+  # @param [Integer] User id
+  #
+  # @return [Float] Similarity
+  def similarity(scores, user1, user2)
+    u1, u2 = [user1, user2].sort
+    @similarity_cache[u1] = Hash.new unless @similarity_cache.has_key?(u1)
+    @similarity_cache[u1][u2] = cal_similarity(scores, u1, u2) unless @similarity_cache[u1].has_key?(u2)
+    return @similarity_cache[u1][u2]
+  end
+
   # Calculate the simialarity of two users
   # Larger the similiarity is, more similiar the users are.
   #
@@ -201,7 +215,7 @@ class MovieData
   # @param [Integer] User id
   #
   # @return [Float] Similiarity
-  def similarity(scores, user1, user2)
+  def cal_similarity(scores, user1, user2)
     shared_items = shared_items(scores, user1, user2)
     n = shared_items.length
     return 1 if n==0
@@ -223,8 +237,8 @@ class MovieData
   #
   # @return [Array] The list of most similar users
   def get_similar_users(scores, u)
-    @similar_list[u] = most_similar(scores, u) if @similar_list[u].nil?
-    return @similar_list[u]
+    @similar_list_cache[u] = most_similar(scores, u) unless @similar_list_cache.has_key?(u)
+    return @similar_list_cache[u]
   end
 
   # Return a list of users that are most similiar to the user given
@@ -255,14 +269,23 @@ class MovieData
     
     return user_list.keys
   end
-
+  
+  # Look up the average rating from cache, and calculate it if not found
+  #
+  # @param [Integer] Movie id
+  #
+  # @return [Float average rating]
+  def average_rating(m)
+    @average_rating_cache[m] = cal_average_rating(m) unless @average_rating_cache.has_key?(m)
+    return @average_rating_cache[m]
+  end
 
   # Return the average rating of all ratings of movie m
   # 
   # @param [Integer] Movie id
   # 
   # @return [Float] average rating
-  def average_rating(m)
+  def cal_average_rating(m)
     # Very rare case that the movie did not appear in the training data
     return 3.0 if @training_ratings_m[m].nil?
     ratings = @training_ratings_m[m].values
